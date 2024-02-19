@@ -69,10 +69,6 @@ def go(config: DictConfig):
                 os.path.join(hydra.utils.get_original_cwd(), "src", "data_check"),
                 "main",
                 parameters={
-                    # "input_artifact": "sample.csv:latest",
-                    # "output_artifact": "clean_sample.csv",
-                    # "output_type": "clean_sample",
-                    # "kl_threshold": "Data with outliers and null values removed",
                     "kl_threshold": config['data_check']['kl_threshold'],
                     "ref": "clean_sample.csv:reference",
                     "csv": "clean_sample.csv:latest",
@@ -86,7 +82,35 @@ def go(config: DictConfig):
             ##################
             # Implement here #
             ##################
-            pass
+            _ = mlflow.run(
+                f"{config['main']['components_repository']}/train_val_test_split",
+                "main",
+                parameters={
+                    "input": "clean_sample.csv:latest",
+                    "test_size":  config['modeling']['test_size'],
+                    "random_seed":  config['modeling']['random_seed'],
+                    "stratify_by":  config['modeling']['stratify_by']
+                },
+            )
+
+    #     input:
+    #     description: Artifact to split (a CSV file)
+    #     type: string
+
+    #   test_size:
+    #     description: Size of the test split. Fraction of the dataset, or number of items
+    #     type: string
+
+    #   random_seed:
+    #     description: Seed for the random number generator. Use this for reproducibility
+    #     type: string
+    #     default: 42
+
+    #   stratify_by:
+    #     description: Column to use for stratification (if any)
+    #     type: string
+    #     default: 'none'
+
 
         if "train_random_forest" in active_steps:
 
