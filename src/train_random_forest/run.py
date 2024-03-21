@@ -151,9 +151,6 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
     ordinal_categorical_preproc = OrdinalEncoder()
 
     ######################################
-    # Build a pipeline with two steps:
-    # 1 - A SimpleImputer(strategy="most_frequent") to impute missing values
-    # 2 - A OneHotEncoder() step to encode the variable
 
     non_ordinal_categorical_preproc = make_pipeline( SimpleImputer(strategy="most_frequent"), OneHotEncoder())
     
@@ -172,7 +169,6 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
     ]
     zero_imputer = SimpleImputer(strategy="constant", fill_value=0)
 
-    # A MINIMAL FEATURE ENGINEERING step:
     # we create a feature that represents the number of days passed since the last review
     # First we impute the missing review date with an old date (because there hasn't been
     # a review for a long time), and then we create a new feature from it,
@@ -211,10 +207,7 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
     random_Forest = RandomForestRegressor(**rf_config)
 
     ######################################
-    # Create the inference pipeline. The pipeline must have 2 steps: a step called "preprocessor" applying the
-    # ColumnTransformer instance that we saved in the `preprocessor` variable, and a step called "random_forest"
-    # with the random forest instance that we just saved in the `random_forest` variable.
-    # HINT: Use the explicit Pipeline constructor so you can assign the names to the steps, do not use make_pipeline
+    # inference pipeline. 
     sk_pipe = Pipeline(
         steps=[("preprocessor", preprocessor),
                ("random_forest", random_Forest)]
